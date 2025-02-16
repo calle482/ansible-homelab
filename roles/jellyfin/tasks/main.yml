@@ -1,0 +1,47 @@
+- name: Create jellyfin user
+  ansible.builtin.user:
+    name: jellyfin
+    state: present
+    shell: /usr/bin/nologin
+    system: true
+    expires: -1
+    password: "!"
+    password_expire_max: 99999
+    create_home: false
+
+- name: Create directories for jellyfin
+  ansible.builtin.file:
+    path: "{{ item }}"
+    state: directory
+    owner: jellyfin
+    group: jellyfin
+    mode: '0660'
+  with_items:
+    - /opt/jellyfin
+    - /opt/jellyfin/config
+
+- name: Get ID of jellyfin user
+  ansible.builtin.command: id -u jellyfin
+  register: jellyfin_id
+  changed_when: false
+
+- name: Get GID of jellyfin user
+  ansible.builtin.command: id -g jellyfin
+  register: jellyfin_gid
+  changed_when: false
+
+- name: Template jellyfin docker-compose file
+  ansible.builtin.template:
+    src: docker-compose.yml.j2
+    dest: /opt/jellyfin/docker-compose.yml
+    owner: jellyfin
+    group: jellyfin
+    mode: '0660'
+  vars:
+    uid: "{{ jellyfin_uid }}"
+    gid: "{{ jellyfin_guid }}"
+
+- name: Start jellyfin container
+  community.docker.docker_compose_v2:
+    project_src: /opt/jellyfin
+    state: present

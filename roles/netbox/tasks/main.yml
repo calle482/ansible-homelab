@@ -1,0 +1,23 @@
+- name: Create directories for netbox
+  ansible.builtin.file:
+    path: "{{ item }}"
+    state: directory
+    owner: netbox
+    group: netbox
+    mode: '0660'
+  with_items:
+    - /opt/netbox
+    - /opt/netbox/config
+
+- name: Template netbox docker-compose file
+  ansible.builtin.template:
+    src: docker-compose.yml.j2
+    dest: /opt/netbox/docker-compose.yml
+    owner: netbox
+    group: netbox
+    mode: '0660'
+
+- name: Start netbox container
+  community.docker.docker_compose_v2:
+    project_src: /opt/netbox
+    state: present

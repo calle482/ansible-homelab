@@ -1,0 +1,48 @@
+- name: Play for importing common configuration
+  hosts: linux
+  tasks:
+
+    - name: Import common role
+      ansible.builtin.import_role:
+        name: common
+
+
+- name: Play for importing arr configuration
+  hosts: arr01
+  tasks:
+
+    - name: Import arr role
+      ansible.builtin.import_role:
+        name: arr
+
+- name: Play for importing jellyfin configuration
+  hosts: jellyfin01
+  tasks:
+
+    - name: Import jellyfin role
+      ansible.builtin.import_role:
+        name: jellyfin
+
+- name: Play for importing netbox configuration
+  hosts: netbox01
+  tasks:
+
+    - name: Import netbox role
+      ansible.builtin.import_role:
+        name: netbox
+
+- name: Play for importing nginx proxy manager configuration
+  hosts: nginxproxy01
+  tasks:
+
+    - name: Import npm role
+      ansible.builtin.import_role:
+        name: npm
+
+- name: Play for importing pihole configuration
+  hosts: pihole01
+  tasks:
+
+    - name: Import pihole role
+      ansible.builtin.import_playbook:
+        name: pihole

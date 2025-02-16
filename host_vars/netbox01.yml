@@ -1,0 +1,4 @@
+netbox_version: 4.2.3-3.1.1
+
+common_host_firewall:
+  - {rule: allow}

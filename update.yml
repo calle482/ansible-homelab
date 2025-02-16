@@ -1,0 +1,7 @@
+- name: Play for updating Linux servers with apt based package manager
+  hosts: linux
+  tasks:
+
+    - name: Import update_apt role
+      ansible.builtin.import_role:
+        name: update_apt

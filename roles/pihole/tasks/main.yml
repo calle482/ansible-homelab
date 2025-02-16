@@ -1,0 +1,23 @@
+- name: Create directories for pihole
+  ansible.builtin.file:
+    path: "{{ item }}"
+    state: directory
+    owner: root
+    group: docker
+    mode: '0660'
+  with_items:
+    - /opt/pihole
+    - /opt/pihole/config
+
+- name: Template pihole docker-compose file
+  ansible.builtin.template:
+    src: docker-compose.yml.j2
+    dest: /opt/pihole/docker-compose.yml
+    owner: root
+    group: docker
+    mode: '0660'
+
+- name: Start pihole container
+  community.docker.docker_compose_v2:
+    project_src: /opt/pihole
+    state: present

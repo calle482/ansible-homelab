@@ -5,7 +5,7 @@
 
 - name: Install ansible & related packages
   ansible.builtin.pip:
-    name:  "{{ item }}"
+    name: "{{ item }}"
     state: present
   with_items:
     - ansible
@@ -21,3 +21,4 @@
     - community.docker
     - community.crypto
     - common.posix
+    - netbox.netbox

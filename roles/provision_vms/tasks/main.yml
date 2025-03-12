@@ -1,0 +1,60 @@
+- name: Block for provisioning VM - {{ ansible_hostname }}
+  delegate_to: localhost
+  block:
+
+    - name: Reserve IP address - {{ ansible_hostname }}
+      netbox.netbox.netbox_ip_address:
+        netbox_url: "{{ netbox_url }}"
+        netbox_token: "{{ netbox_api_key }}"
+        data:
+          prefix: "{{ netbox_prefix }}"
+          status: active
+          tenant: "{{ netbox_tenant }}"
+          dns_name: "{{ ansible_hostname }}.jagvettefan.com"
+        state: present
+      register: vm_ip_facts
+
+    - name: Create VM in Netbox - {{ ansible_hostname }}
+      netbox.netbox.netbox_virtual_machine:
+        netbox_url: "{{ netbox_url }}"
+        netbox_token: "{{ netbox_api_key }}"
+        data:
+          name: "{{ vm_name }}"
+          vcpus: "{{ vm_cpus | int }}"
+          memory: "{{ vm_memory | int }}"
+          cluster: "{{ netbox_cluster }}"
+          primary_ipv4: "{{ vm_ip_facts.something }}"
+          status: active
+
+    - name: Create network interface - {{ ansible_hostname }}
+      netbox.netbox.netbox_vm_interface:
+        netbox_url: "{{ netbox_url }}"
+        netbox_token: "{{ netbox_api_key }}"
+        data:
+          virtual_machine: "{{ ansible_hostname }}"
+          name: eth0
+          enabled: true
+
+    - name: Provision VM in proxmox - {{ ansible_hostname }}
+      community.general.proxmox.kvm:
+        api_host: "{{ proxmox_url }}"
+        api_user: "ansible@pam"
+        api_password: "{{ proxmox_ansible_password }}"
+        node: "pve"
+        name: "{{ vm_name }}"
+        net:
+          'virtio,bridge=vmbr0'
+        bios: ovmf
+        scsilhw: "virtio-scsi-pci"
+        clone: "{{ vm_template }}"
+        storage: "{{ vm_storage }}"
+        cores: "{{ vm_cpus }}"
+        memory: "{{ vm_memory }}" # MB
+        virtio:
+          - "local-lvm:{{ vm_disk_size }},format=qcow2"
+        efidisk0:
+          storage: "local-lvm"
+          format: "raw"
+          efitype: "4m"
+          pre_enrolled_keys: false
+          state: present

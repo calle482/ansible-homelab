@@ -1,0 +1,15 @@
+# Netbox
+netbox_role: "Virtual-machine"
+netbox_site: "random-site"
+netbox_cluster: "random-cluster"
+netbox_platform: "Ubuntu Linux"
+netbox_prefix: "192.168.10.0/24"
+netbox_tenant: "???"
+
+# VM Specifications
+vm_name: "{{ ansible_hostname }}"
+vm_cpus: "4"
+vm_memory: "16384" # MB
+vm_disk_size: "80" # GB
+vm_template: "ubuntu-2404-cloudinit-template"
+vm_storage: "local-lvm"

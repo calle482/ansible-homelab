@@ -1,0 +1,67 @@
+- name: Ensure ufw is installed
+  ansible.builtin.apt:
+    name: ufw
+    state: present
+
+- name: Rest ufw to default settings
+  ansible.builtin.ufw:
+    state: reset
+
+- name: Ensure ufw service is running
+  ansible.builtin.service:
+    name: ufw
+    state: started
+    enabled: true
+
+- name: Ensure ufw is running
+  ansible.builtin.ufw:
+    state: running
+
+- name: Merge host and group firewall rules
+  ansible.builtin.set_fact:
+    common_firewall_rules: "{{ common_group_firewall_rules + ( common_host_firewall_rules | default([])) }}"
+
+- name: Apply incoming firewall rules
+  ansible.builtin.ufw::
+    rule: allow
+    port: "{{ item.port }}"
+    from_ip: "{{ item.ip | default(omit) }}"
+    proto: "{{ item.protocol }}"
+    direction: incoming
+  with_items: "{{ common_firewall_rules }}"
+
+- name: Set ufw default outgoing policy to allow
+  ansible.builtin.ufw:
+    default: allow
+    direction: outgoing
+
+- name: Set ufw default incoming policy to deny
+  ansible.builtin.ufw:
+    default: deny
+    direction: incoming
+
+- name: Template out file to fix docker firewall issue
+  when: inventory_hostname in groups["docker"]
+  ansible.builtin.blockinfile:
+    path: /etc/ufw/after.rules
+    marker: "<!-- {mark} ANSIBLE MANAGED BLOCK -->"
+    block: |
+      *filter
+      :ufw-user-forward - [0:0]
+      :DOCKER-USER - [0:0]
+      -A DOCKER-USER -j RETURN -s 10.0.0.0/8
+      -A DOCKER-USER -j RETURN -s 172.16.0.0/12
+      -A DOCKER-USER -j RETURN -s 192.168.0.0/16
+      -A DOCKER-USER -j ufw-user-forward
+      -A DOCKER-USER -j DROP -p tcp -m tcp --tcp-flags FIN,SYN,RST,ACK SYN -d 192.168.0.0/16
+      -A DOCKER-USER -j DROP -p tcp -m tcp --tcp-flags FIN,SYN,RST,ACK SYN -d 10.0.0.0/8
+      -A DOCKER-USER -j DROP -p tcp -m tcp --tcp-flags FIN,SYN,RST,ACK SYN -d 172.16.0.0/12
+      -A DOCKER-USER -j DROP -p udp -m udp --dport 0:32767 -d 192.168.0.0/16
+      -A DOCKER-USER -j DROP -p udp -m udp --dport 0:32767 -d 10.0.0.0/8
+      -A DOCKER-USER -j DROP -p udp -m udp --dport 0:32767 -d 172.16.0.0/12
+      -A DOCKER-USER -j RETURN
+      COMMIT
+
+- name: Reload ufw config
+  ansible.builtin.ufw:
+    state: reloaded

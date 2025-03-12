@@ -1,0 +1,4 @@
+- name: Import speedtest to qbittorent
+  ansible.builtin.copy:
+    src: qbittorent/speedtest
+    dest: /opt/docker/qbittorent/speedtest

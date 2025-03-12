@@ -1,0 +1,69 @@
+- name: Install docker
+  ansible.builtin.package:
+    name: docker.io
+    state: present
+
+- name: Create dockerfiles group
+  ansible.builtin.group:
+    name: dockerfiles
+    gid: 1500
+    state: present
+
+- name: Create dockeruser user
+  ansible.builtin.user:
+    name: dockeruser
+    state: present
+    shell: /usr/bin/nologin
+    system: true
+    expires: -1
+    password: "!"
+    password_expire_max: 99999
+    create_home: false
+    uid: 900
+    group: dockerfiles
+
+- name: Create docker directory
+  ansible.builtin.file:
+    path: /opt/docker
+    state: directory
+    mode: '0770'
+    owner: root
+    group: docker
+
+- name: Create docker config directories
+  ansible.builtin.file:
+    path: /opt/docker/"{{ item }}"
+    state: directory
+    mode: '0770'
+    owner: root
+    group: dockerfiles
+  with_items:
+    - gluetun
+    - qbittorrent
+    - bazarr
+    - radarr
+    - sonarr
+    - autobrr
+    - jackett
+    - prowlarr
+
+- name: Import bazarr tasks
+  ansible.builtin.import_tasks:
+    file: bazarr.ymli
+
+- name: Import qbittorent tasks
+  ansible.builtin.import_tasks:
+    file: qbittorrent.yml
+
+- name: Template out docker-compose file
+  ansible.builtin.template:
+    src: docker-compose.yml.j2
+    dest: /opt/docker/docker-compose.yml
+    owner: root
+    group: docker
+    mode: '0770'
+
+- name: Start docker-compose containers
+  community.docker.docker_compose_v2:
+    project_src: /opt/docker
+    state: present

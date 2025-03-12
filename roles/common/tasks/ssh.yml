@@ -1,0 +1,8 @@
+- name: Template out sshd config
+  ansible.builtin.template:
+    src: ssh.conf.j2
+    dest: /etc/ssh/sshd_config.d/custom.conf
+    validate: /usr/sbin/sshd -T -f %s
+    mode: '0644'
+    owner: root
+    group: root

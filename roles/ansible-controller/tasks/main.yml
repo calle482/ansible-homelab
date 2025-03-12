@@ -1,0 +1,23 @@
+- name: Install pip
+  ansible.builtin.package:
+    name: python3-pip
+    state: present
+
+- name: Install ansible & related packages
+  ansible.builtin.pip:
+    name:  "{{ item }}"
+    state: present
+  with_items:
+    - ansible
+    - ansible-vault
+    - ansible-galaxy
+
+- name: Install ansible galaxy collections
+  community.general.ansible_galaxy_install:
+    type: collection
+    name: "{{ item }}"
+  with_items:
+    - community.general
+    - community.docker
+    - community.crypto
+    - common.posix

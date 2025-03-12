@@ -1,0 +1,15 @@
+- name: Copy subcleaner to docker directory
+  ansible.builtin.copy:
+    src: bazarr/subcleaner/
+    dest: /opt/docker/bazarr/subcleaner
+    mode: '0770'
+    owner: root
+    group: dockerfiles
+
+- name: Copy subsync to docker directory
+  ansible.builtin.copy:
+    src: bazarr/subsync.py
+    dest: /opt/docker/bazarr/subsync.py
+    mode: '0770'
+    owner: root
+    group: dockerfiles

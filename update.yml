@@ -1,5 +1,5 @@
 - name: Play for updating Linux servers with apt based package manager
-  hosts: linux
+  hosts: update
   tasks:
 
     - name: Import update_apt role

@@ -6,6 +6,13 @@
       ansible.builtin.import_role:
         name: common
 
+- name: PLay for importing ansible controller configuration
+  hosts: ansible01
+  tasks:
+
+    - name: Import ansible-controller role
+      ansible.builtin.import_role:
+        name: ansible-controller
 
 - name: Play for importing arr configuration
   hosts: arr01
@@ -44,5 +51,13 @@
   tasks:
 
     - name: Import pihole role
-      ansible.builtin.import_playbook:
+      ansible.builtin.import_role:
         name: pihole
+
+- name: Play for importing guacamole configuration
+  hosts: guacamole01
+  tasks:
+
+    - name: Import guacamole role
+      ansible.builtin.import_role:
+        name: guacamole

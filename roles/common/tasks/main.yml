@@ -1,0 +1,16 @@
+- name: Install python3
+  ansible.builtin.package:
+    name: python3
+    state: present
+
+- name: Import firewall tasks
+  ansible.builtin.import_tasks:
+    file: firewall.yml
+
+- name: Import SSH tasks
+  ansible.builtin.import_tasks:
+    file: ssh.yml
+
+- name: Import sudoers tasks
+  ansible.builtin.import_tasks:
+    file: ssh.yml

@@ -1,23 +1,66 @@
+- name: Create dockerfiles group
+  ansible.builtin.group:
+    name: dockerfiles
+    gid: 1500
+    state: present
+
+- name: Create dockeruser user
+  ansible.builtin.user:
+    name: dockeruser
+    state: present
+    shell: /usr/bin/nologin
+    system: true
+    expires: -1
+    password: "!"
+    password_expire_max: 99999
+    create_home: false
+    uid: 900
+    group: dockerfiles
+
 - name: Create directories for netbox
   ansible.builtin.file:
     path: "{{ item }}"
     state: directory
-    owner: netbox
-    group: netbox
-    mode: '0660'
+    owner: root
+    group: dockerfiles
+    mode: '0770'
   with_items:
     - /opt/netbox
     - /opt/netbox/config
+    - /opt/netbox/caddy
 
 - name: Template netbox docker-compose file
   ansible.builtin.template:
     src: docker-compose.yml.j2
     dest: /opt/netbox/docker-compose.yml
-    owner: netbox
-    group: netbox
-    mode: '0660'
+    owner: root
+    group: dockerfiles
+    mode: '0770'
+
+- name: Template caddyfile
+  ansible.builtin.template:
+    src: caddyfile.j2
+    dest: /opt/netbox/caddy/caddyfile
+    owner: root
+    group: dockerfiles
+    mode: '0770'
 
 - name: Start netbox container
   community.docker.docker_compose_v2:
     project_src: /opt/netbox
     state: present
+
+- name: Wait for netbox to become available
+  ansible.builtin.uri:
+    url: "https://netbox.trongull.com"
+    method: GET
+    timeout: 10
+  register: netbox_status
+  retries: 200
+  delay: 10
+  until: netbox_status.status == 200
+  ignore_errors: true
+
+- name: Import netbox post install tasks
+  ansible.builtin.import_tasks:
+    file: netbox.yml

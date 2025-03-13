@@ -1,0 +1,10 @@
+{
+  acme_dns cloudflare {env.CLOUDFLARE_API_TOKEN}
+}
+
+netbox.trongull.com {
+    tls {
+        dns cloudflare
+    }
+    reverse_proxy netbox:80
+}

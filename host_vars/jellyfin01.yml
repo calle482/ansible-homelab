@@ -1,10 +1,10 @@
 # Netbox
-netbox_role: "Virtual-machine"
-netbox_site: "random-site"
-netbox_cluster: "random-cluster"
-netbox_platform: "Ubuntu Linux"
+netbox_role: "virtual-server"
+netbox_site: "homelab-site"
+netbox_cluster: "pve"
+netbox_platform: "ubuntu-linux"
 netbox_prefix: "192.168.10.0/24"
-netbox_tenant: "???"
+netbox_tenant: "homelab-tenant"
 
 # VM Specifications
 vm_name: "{{ ansible_hostname }}"

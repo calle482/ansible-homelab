@@ -13,10 +13,10 @@ services:
       timeout: 3s
       interval: 15s
     volumes:
-      - ./configuration:/etc/netbox/config:z,ro
-      - netbox-media-files:/opt/netbox/netbox/media:rw
-      - netbox-reports-files:/opt/netbox/netbox/reports:rw
-      - netbox-scripts-files:/opt/netbox/netbox/scripts:rw
+      - ./netbox/config:/etc/netbox/config:z,ro
+      - ./netbox/netbox-media-files:/opt/netbox/netbox/media:rw
+      - ./netbox/netbox-reports-files:/opt/netbox/netbox/reports:rw
+      - ./netboxnetbox-scripts-files:/opt/netbox/netbox/scripts:rw
   netbox-worker:
     <<: *netbox
     depends_on:
@@ -55,7 +55,7 @@ services:
       retries: 5
     env_file: env/postgres.env
     volumes:
-      - netbox-postgres-data:/var/lib/postgresql/data
+      - ./netbox/netbox-postgres-data:/var/lib/postgresql/data
 
   # redis
   redis:
@@ -72,7 +72,7 @@ services:
       retries: 5
     env_file: env/redis.env
     volumes:
-      - netbox-redis-data:/data
+      - ./netbox/netbox-redis-data:/data
   redis-cache:
     image: docker.io/valkey/valkey:8.0-alpine
     command:
@@ -83,6 +83,19 @@ services:
     env_file: env/redis-cache.env
     volumes:
       - netbox-redis-cache-data:/data
+  caddy:
+    image: iarekylew00t/caddy-cloudflare:latest
+    container_name: caddy
+    restart: unless-stopped
+    ports:
+      - "443:443"
+      - "80:80"
+    environment:
+      - CLOUDFLARE_API_TOKEN="{{ cloudflare_api_token }}"
+    volumes:
+      - ./caddy/caddyfile:/etc/caddy/Caddyfile
+      - ./caddycaddy_data:/data
+      - ./caddy/caddy_config:/config
 
 volumes:
   netbox-media-files:

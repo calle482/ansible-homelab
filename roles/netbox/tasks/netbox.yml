@@ -1,0 +1,65 @@
+- name: Create netbox device role - Virtual Server
+  netbox.netbox.netbox_device_role:
+    netbox_url: "{{ netbox_url }}"
+    netbox_token: "{{ netbox_api_key }}"
+    data:
+      name: "Virtual Server"
+      slug: "virtual-server"
+      description: "Role for virtual machines"
+      vm_role: true
+    state: present
+    validate_certs: false
+
+- name: Create netbox site - Homelab Site
+  netbox.netbox.netbox_site:
+    netbox_url: "{{ netbox_url }}"
+    netbox_token: "{{ netbox_api_key }}"
+    data:
+      name: "Homelab Site"
+      slug: "homelab-site"
+      description: "Site for my homelab"
+    state: present
+    validate_certs: false
+
+- name: Create netbox cluster - pve
+  netbox.netbox.netbox_cluster:
+    netbox_url: "{{ netbox_url }}"
+    netbox_token: "{{ netbox_api_key }}"
+    data:
+      name: "pve"
+      cluster_type: "Virtualization"
+    state: present
+    validate_certs: false
+
+- name: Create netbox platform - Ubuntu Linux
+  netbox.netbox.netbox_platform:
+    netbox_url: "{{ netbox_url }}"
+    netbox_token: "{{ netbox_api_key }}"
+    data:
+      name: "Ubuntu Linux"
+      slug: "ubuntu-linux"
+    state: present
+    validate_certs: false
+
+- name: Create netbox tenant - Homelab Site
+  netbox.netbox.netbox_tenant:
+    netbox_url: "{{ netbox_url }}"
+    netbox_token: "{{ netbox_api_key }}"
+    data:
+      name: "Homelab Tenant"
+      slug: "homelab-tenant"
+    state: present
+    validate_certs: false
+
+- name: Create netbox prefix - 192.168.10.0/24
+  netbox.netbox.netbox_prefix:
+    netbox_url: "{{ netbox_url }}"
+    netbox_token: "{{ netbox_api_key }}"
+    data:
+      prefix: 192.168.10.0/24
+      site: "homelab-site"
+      tenant: "homelab-tenant"
+      status: active
+      is_pool: true
+    state: present
+    validate_certs: false

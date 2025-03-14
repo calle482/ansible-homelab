@@ -1,4 +1,5 @@
 - name: Play for importing common configuration
+  become: true
   hosts: linux
   tasks:
 
@@ -7,6 +8,7 @@
         name: common
 
 - name: PLay for importing ansible controller configuration
+  become: true
   hosts: ansible01
   tasks:
 
@@ -15,6 +17,7 @@
         name: ansible-controller
 
 - name: Play for importing arr configuration
+  become: true
   hosts: arr01
   tasks:
 
@@ -23,6 +26,7 @@
         name: arr
 
 - name: Play for importing jellyfin configuration
+  become: true
   hosts: jellyfin01
   tasks:
 
@@ -31,7 +35,10 @@
         name: jellyfin
 
 - name: Play for importing netbox configuration
+  become: true
   hosts: netbox01
+  vars_files:
+    - vault.yml
   tasks:
 
     - name: Import netbox role
@@ -39,6 +46,7 @@
         name: netbox
 
 - name: Play for importing nginx proxy manager configuration
+  become: true
   hosts: nginxproxy01
   tasks:
 
@@ -47,6 +55,7 @@
         name: npm
 
 - name: Play for importing pihole configuration
+  become: true
   hosts: pihole01
   tasks:
 
@@ -55,6 +64,7 @@
         name: pihole
 
 - name: Play for importing guacamole configuration
+  become: true
   hosts: guacamole01
   tasks:
 

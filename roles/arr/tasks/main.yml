@@ -49,7 +49,7 @@
 
 - name: Import bazarr tasks
   ansible.builtin.import_tasks:
-    file: bazarr.ymli
+    file: bazarr.yml
 
 - name: Import qbittorent tasks
   ansible.builtin.import_tasks:

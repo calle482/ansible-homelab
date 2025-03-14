@@ -1,4 +1,4 @@
-- hosts: localhost
+- hosts: provision
   gather_facts: false
   tasks:
 

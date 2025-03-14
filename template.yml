@@ -1,0 +1,6 @@
+- hosts: proxmox01
+  tasks:
+
+    - name: Import template role
+      ansible.builtin.import_role:
+        name: template

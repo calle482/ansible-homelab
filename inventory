@@ -25,3 +25,9 @@ netbox01
 nginxproxy01
 pihole01
 guacamole01
+
+[provision]
+netbox01
+
+[proxmox]
+proxmox01

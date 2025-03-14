@@ -3,7 +3,7 @@
     name: ufw
     state: present
 
-- name: Rest ufw to default settings
+- name: Reset ufw to default settings
   ansible.builtin.ufw:
     state: reset
 
@@ -13,21 +13,17 @@
     state: started
     enabled: true
 
-- name: Ensure ufw is running
-  ansible.builtin.ufw:
-    state: running
-
 - name: Merge host and group firewall rules
   ansible.builtin.set_fact:
     common_firewall_rules: "{{ common_group_firewall_rules + ( common_host_firewall_rules | default([])) }}"
 
 - name: Apply incoming firewall rules
-  ansible.builtin.ufw::
+  community.general.ufw:
     rule: allow
     port: "{{ item.port }}"
     from_ip: "{{ item.ip | default(omit) }}"
     proto: "{{ item.protocol }}"
-    direction: incoming
+    direction: in
   with_items: "{{ common_firewall_rules }}"
 
 - name: Set ufw default outgoing policy to allow

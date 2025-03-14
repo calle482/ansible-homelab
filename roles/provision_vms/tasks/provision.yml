@@ -1,0 +1,75 @@
+- name: Provision VMs in proxmox
+  community.general.proxmox_kvm:
+    api_host: "{{ proxmox_url }}"
+    api_user: "{{ proxmox_api_user }}"
+    api_token_secret: "{{ proxmox_api_token_secret }}"
+    api_token_id: "{{ proxmox_api_token_id }}"
+    node: "pve"
+    name: "{{ inventory_hostname }}"
+    net:
+      net0: 'virtio,bridge=vmbr0'
+    bios: ovmf
+    scsihw: "virtio-scsi-pci"
+    clone: "{{ vm_template }}"
+    storage: "{{ vm_storage }}"
+    cores: "{{ vm_cpus }}"
+    memory: "{{ vm_memory }}" # MB
+    virtio:
+      virtio0: "local-lvm:{{ vm_disk_size }},format=qcow2"
+    efidisk0:
+      storage: "local-lvm"
+      format: "raw"
+      efitype: "4m"
+      pre_enrolled_keys: "false"
+    ipconfig:
+      ipconfig0: 'ip=192.168.10.25/24,gw=192.168.10.1'
+    state: present
+    validate_certs: false
+    timeout: 600
+  throttle: 1
+
+- name: Update VMs specifications
+  community.general.proxmox_kvm:
+    api_host: "{{ proxmox_url }}"
+    api_user: "{{ proxmox_api_user }}"
+    api_token_secret: "{{ proxmox_api_token_secret }}"
+    api_token_id: "{{ proxmox_api_token_id }}"
+    node: "pve"
+    name: "{{ inventory_hostname }}"
+    cores: "{{ vm_cpus }}"
+    memory: "{{ vm_memory }}" # MB
+    ipconfig:
+      ipconfig0: 'ip=192.168.10.25/24,gw=192.168.10.1'
+    autostart: true
+    update: true
+    state: present
+    validate_certs: false
+
+- name: Update VMs disk size
+  community.general.proxmox_disk:
+    api_host: "{{ proxmox_url }}"
+    api_user: "{{ proxmox_api_user }}"
+    api_token_secret: "{{ proxmox_api_token_secret }}"
+    api_token_id: "{{ proxmox_api_token_id }}"
+    name: "{{ inventory_hostname }}"
+    disk: virtio0
+    size: "{{ vm_disk_size }}G"
+    state: resized
+
+- name: Start VMs
+  community.general.proxmox_kvm:
+    api_host: "{{ proxmox_url }}"
+    api_user: "{{ proxmox_api_user }}"
+    api_token_secret: "{{ proxmox_api_token_secret }}"
+    api_token_id: "{{ proxmox_api_token_id }}"
+    node: "pve"
+    name: "{{ inventory_hostname }}"
+    state: started
+
+- name: Wait for SSH to become available
+  ansible.builtin.wait_for:
+    host: 192.168.10.25
+    port: 22
+    delay: 10
+    timeout: 600
+    state: started

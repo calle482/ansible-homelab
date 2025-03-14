@@ -3,6 +3,11 @@
     name: python3
     state: present
 
+- name: Install qemu guest agent
+  ansible.builtin.package:
+    name: qemu-guest-agent
+    state: present
+
 - name: Import firewall tasks
   ansible.builtin.import_tasks:
     file: firewall.yml

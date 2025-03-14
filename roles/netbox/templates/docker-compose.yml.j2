@@ -1,11 +1,11 @@
 services:
   netbox: &netbox
-    image: docker.io/netboxcommunity/netbox:"{{ netbox_version}}"
+    image: docker.io/netboxcommunity/netbox:{{ netbox_version }}
     depends_on:
       - postgres
       - redis
       - redis-cache
-    env_file: env/netbox.env
+    env_file: /opt/netbox/env/netbox.env
     user: "unit:root"
     healthcheck:
       test: curl -f http://localhost:8080/login/ || exit 1
@@ -13,10 +13,10 @@ services:
       timeout: 3s
       interval: 15s
     volumes:
-      - ./netbox/config:/etc/netbox/config:z,ro
+      - ./config/netbox-config:/etc/netbox/config:z,ro
       - ./netbox/netbox-media-files:/opt/netbox/netbox/media:rw
       - ./netbox/netbox-reports-files:/opt/netbox/netbox/reports:rw
-      - ./netboxnetbox-scripts-files:/opt/netbox/netbox/scripts:rw
+      - ./netbox/netbox-scripts-files:/opt/netbox/netbox/scripts:rw
   netbox-worker:
     <<: *netbox
     depends_on:
@@ -53,7 +53,7 @@ services:
       timeout: 30s
       interval: 10s
       retries: 5
-    env_file: env/postgres.env
+    env_file: /opt/netbox/env/postgres.env
     volumes:
       - ./netbox/netbox-postgres-data:/var/lib/postgresql/data
 
@@ -62,7 +62,7 @@ services:
     image: docker.io/valkey/valkey:8.0-alpine
     command:
       - sh
-      - -c # this is to evaluate the $REDIS_PASSWORD from the env
+      - -c ./config/# this is to evaluate the $REDIS_PASSWORD from the env
       - valkey-server --appendonly yes --requirepass $$REDIS_PASSWORD ## $$ because of docker-compose
     healthcheck: &redis-healthcheck
       test: '[ $$(valkey-cli --pass "$${REDIS_PASSWORD}" ping) = ''PONG'' ]'
@@ -70,9 +70,9 @@ services:
       timeout: 3s
       interval: 1s
       retries: 5
-    env_file: env/redis.env
+    env_file: /opt/netbox/env/redis.env
     volumes:
-      - ./netbox/netbox-redis-data:/data
+      - ./config/netbox-redis-data:/data
   redis-cache:
     image: docker.io/valkey/valkey:8.0-alpine
     command:
@@ -80,7 +80,7 @@ services:
       - -c # this is to evaluate the $REDIS_PASSWORD from the env
       - valkey-server --requirepass $$REDIS_PASSWORD ## $$ because of docker-compose
     healthcheck: *redis-healthcheck
-    env_file: env/redis-cache.env
+    env_file: /opt/netbox/env/redis-cache.env
     volumes:
       - netbox-redis-cache-data:/data
   caddy:
@@ -91,10 +91,10 @@ services:
       - "443:443"
       - "80:80"
     environment:
-      - CLOUDFLARE_API_TOKEN="{{ cloudflare_api_token }}"
+      - CF_API_TOKEN={{ cloudflare_api_token }}
     volumes:
       - ./caddy/caddyfile:/etc/caddy/Caddyfile
-      - ./caddycaddy_data:/data
+      - ./caddy/caddy_data:/data
       - ./caddy/caddy_config:/config
 
 volumes:

@@ -1,0 +1,50 @@
+- name: Check if ISO file exits for {{ vm_template }}
+  ansible.builtin.stat:
+    path: /var/lib/vz/template/iso/{{ vm_template_image_name }}
+  register: iso_check
+
+- name: Download ISO for {{ vm_template }}
+  ansible.builtin.get_url:
+    url: "{{ vm_template_image_url }}"
+    dest: /var/lib/vz/template/iso/
+    mode: '0644'
+    timeout: 3600
+  when: not iso_check.stat.exists
+
+- name: Check if template already exists for {{ vm_template }}
+  ansible.builtin.shell: qm list | grep {{ vm_template }} | cut -d ' ' -f 8
+  ignore_errors: true
+  register: template_id_check
+  changed_when: false
+
+- name: Copy public ssh key
+  ansible.builtin.copy:
+    src: ansible_key.pub
+    dest: /root/
+    mode: '0644'
+    owner: root
+    group: root
+
+- name: Create VM for - {{ vm_template }}
+  when: template_id_check.stdout == ""
+  block:
+    - name: Create temp VM
+      ansible.builtin.command: "{{ item }}"
+      loop:
+        - "qm create {{ vm_template_id }} --name {{ vm_template }} --cpu host --socket 1 --cores 2 --memory 4096 --net0 virtio,bridge=vmbr0 --ostype l26 --agent 1 --bios ovmf --machine q35 --efidisk0 local-lvm:0,pre-enrolled-keys=0"
+        - "qm set {{ vm_template_id }} --serial0 socket --vga serial0"
+        - "qm importdisk {{ vm_template_id }} '/var/lib/vz/template/iso/{{ vm_template_image_name }}' local-lvm"
+        - "qm set {{ vm_template_id }} --scsihw virtio-scsi-pci --virtio0 local-lvm:vm-{{ vm_template_id }}-disk-1,discard=on"
+        - "qm resize {{ vm_template_id }} virtio0 +8G"
+        - "qm set {{ vm_template_id }} --boot order=virtio0"
+        - "qm set {{ vm_template_id }} --scsi1 local-lvm:cloudinit"
+        - "qm set {{ vm_template_id }} --ipconfig0 ip=dhcp"
+        - "qm set {{ vm_template_id }} --ciuser cloudinit --cipassword {{ vm_template_user_password }}"
+        - "qm set {{ vm_template_id }} --sshkeys /root/ansible_key.pub "
+      changed_when: false
+
+    - name: Convert VM to template - {{ vm_template }}
+      ansible.builtin.command: "{{ item }}"
+      loop:
+        - "qm template {{ vm_template_id }}"
+      changed_when: false

@@ -1,0 +1,50 @@
+- name: Block for provisioning VMs in Netbox
+  delegate_to: localhost
+  block:
+
+    - name: Create VMs in Netbox
+      netbox.netbox.netbox_virtual_machine:
+        netbox_url: "{{ netbox_url }}"
+        netbox_token: "{{ netbox_api_key }}"
+        data:
+          name: "{{ inventory_hostname }}"
+          vcpus: "{{ vm_cpus | int }}"
+          memory: "{{ vm_memory | int }}"
+          cluster: "{{ netbox_cluster }}"
+          virtual_machine_role: "{{ netbox_role }}"
+          site: "{{ netbox_site }}"
+          platform: "{{ netbox_platform }}"
+          tenant: "{{ netbox_tenant }}"
+          status: active
+
+    - name: Create network interface on VMs in Netbox
+      netbox.netbox.netbox_vm_interface:
+        netbox_url: "{{ netbox_url }}"
+        netbox_token: "{{ netbox_api_key }}"
+        data:
+          virtual_machine: "{{ inventory_hostname }}"
+          name: eth0
+          enabled: true
+
+    - name: Reserve IP address for VMs in Netbox
+      netbox.netbox.netbox_ip_address:
+        netbox_url: "{{ netbox_url }}"
+        netbox_token: "{{ netbox_api_key }}"
+        data:
+          prefix: "{{ netbox_prefix }}"
+          status: active
+          tenant: "{{ netbox_tenant }}"
+          dns_name: "{{ inventory_hostname }}.jagvettefan.com"
+          assigned_object:
+            virtual_machine: "{{ inventory_hostname }}"
+            name: eth0
+        state: present
+      register: vm_ip
+
+    - name: Assign primariy IP to VMs in Netbox
+      netbox.netbox.netbox_virtual_machine:
+        netbox_url: "{{ netbox_url }}"
+        netbox_token: "{{ netbox_api_key }}"
+        data:
+          name: "{{ inventory_hostname }}"
+          primary_ip4: "{{ vm_ip.ip_address.address }}"

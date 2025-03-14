@@ -1,4 +1,15 @@
-netbox_version: 4.2.3-3.1.1
+# VM Specifications
+vm_cpus: "2"
+vm_memory: "4096" # MB
+vm_disk_size: "60" # GB
 
-common_host_firewall:
-  - {rule: allow}
+# Firewall
+common_host_firewall_rules:
+  - { port: "80", protocol: "tcp" }
+  - {port: "443", protocol: "tcp"}
+
+# Netbox
+netbox_version: "v4.2.5-3.2.0"
+
+
+ansible_host: "192.168.10.25"

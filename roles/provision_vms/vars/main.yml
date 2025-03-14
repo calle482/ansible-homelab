@@ -2,12 +2,7 @@ netbox_url: "https://demo.netbox.dev"
 netbox_api_key: "5a9ba2644ee839c3d8fe86761cb2371b07799afa"
 netbox_prefix: "10.112.148.0/28"
 netbox_tenant: "stark-industries"
-ansible_hostname: "trongull01"
 netbox_cluster: "DO-AMS3"
-vm_name: "{{ ansible_hostname }}"
-vm_cpus: "4"
-vm_memory: "16384" # MB
-vm_disk_size: "80" # GB
 vm_template: "ubuntu-2404-cloudinit-template"
 vm_storage: "local-lvm"
 
@@ -18,3 +13,11 @@ vm_storage: "local-lvm"
 netbox_role: "virtual-server"
 netbox_site: "aai"
 netbox_platform: "ubuntu-linux"
+
+# VM Template
+vm_template_image_name: "ubuntu-24.04-server-cloudimg-amd64.img"
+vm_template_image_url: "https://cloud-images.ubuntu.com/daily/server/releases/24.04/release/ubuntu-24.04-server-cloudimg-amd64.img"
+vm_template_id: "10002"
+
+# proxmox
+proxmox_url:

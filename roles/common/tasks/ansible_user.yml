@@ -4,6 +4,7 @@
     password: '!'
     password_expire_max: 999999
     expires: -1
+    shell: /bin/bash
 
 - name: Copy ansible user public key
   ansible.posix.authorized_key:

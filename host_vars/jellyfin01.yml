@@ -1,15 +1,4 @@
-# Netbox
-netbox_role: "virtual-server"
-netbox_site: "homelab-site"
-netbox_cluster: "pve"
-netbox_platform: "ubuntu-linux"
-netbox_prefix: "192.168.10.0/24"
-netbox_tenant: "homelab-tenant"
-
 # VM Specifications
-vm_name: "{{ ansible_hostname }}"
 vm_cpus: "4"
 vm_memory: "16384" # MB
 vm_disk_size: "80" # GB
-vm_template: "ubuntu-2404-cloudinit-template"
-vm_storage: "local-lvm"

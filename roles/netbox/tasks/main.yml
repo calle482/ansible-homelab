@@ -1,3 +1,11 @@
+- name: Install docker
+  ansible.builtin.package:
+    name: "{{ item }}"
+    state: present
+  with_items:
+    - docker.io
+    - docker-compose-v2
+
 - name: Create dockerfiles group
   ansible.builtin.group:
     name: dockerfiles
@@ -22,11 +30,14 @@
     path: "{{ item }}"
     state: directory
     owner: root
-    group: dockerfiles
+    group: root
     mode: '0770'
   with_items:
     - /opt/netbox
-    - /opt/netbox/config
+    - /opt/netbox/netbox
+    - /opt/netbox/netbox/media
+    - /opt/netbox/config/netbox-config
+    - /opt/netbox/env
     - /opt/netbox/caddy
 
 - name: Template netbox docker-compose file
@@ -34,15 +45,55 @@
     src: docker-compose.yml.j2
     dest: /opt/netbox/docker-compose.yml
     owner: root
-    group: dockerfiles
+    group: root
     mode: '0770'
 
-- name: Template caddyfile
+- name: Template out netbox docker-compose override file
+  ansible.builtin.template:
+    src: docker-compose.override.yml.j2
+    dest: /opt/netbox/docker-compose.override.yml
+    owner: root
+    group: root
+    mode: '0770'
+
+- name: Template out caddyfile
   ansible.builtin.template:
     src: caddyfile.j2
     dest: /opt/netbox/caddy/caddyfile
     owner: root
-    group: dockerfiles
+    group: root
+    mode: '0770'
+
+- name: Template out postgres env file
+  ansible.builtin.template:
+    src: postgres.env.j2
+    dest: /opt/netbox/env/postgres.env
+    owner: root
+    group: root
+    mode: '0770'
+
+- name: Template out redis env file
+  ansible.builtin.template:
+    src: redis.env.j2
+    dest: /opt/netbox/env/redis.env
+    owner: root
+    group: root
+    mode: '0770'
+
+- name: Template out redis cache env file
+  ansible.builtin.template:
+    src: redis-cache.env.j2
+    dest: /opt/netbox/env/redis-cache.env
+    owner: root
+    group: root
+    mode: '0770'
+
+- name: Template out netbox env file
+  ansible.builtin.template:
+    src: netbox.env.j2
+    dest: /opt/netbox/env/netbox.env
+    owner: root
+    group: root
     mode: '0770'
 
 - name: Start netbox container
@@ -52,7 +103,7 @@
 
 - name: Wait for netbox to become available
   ansible.builtin.uri:
-    url: "https://netbox.trongull.com"
+    url: "https://netbox.troncraft.xyz"
     method: GET
     timeout: 10
   register: netbox_status

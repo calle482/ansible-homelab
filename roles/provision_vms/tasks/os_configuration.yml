@@ -1,0 +1,44 @@
+- name: Create ansible user
+  ansible.builtin.user:
+    name: ansible
+    password: '!'
+    password_expire_max: 999999
+    expires: -1
+    shell: /bin/bash
+
+- name: Copy ansible user public key
+  ansible.posix.authorized_key:
+    user: ansible
+    state: present
+    key: "{{ lookup('file', 'ansible_key.pub') }}"
+
+- name: Restart SSH after adding new key
+  ansible.builtin.service:
+    name: ssh
+    state: restarted
+
+- name: Template out sshd config
+  ansible.builtin.template:
+    src: ssh.conf.j2
+    dest: /etc/ssh/sshd_config.d/custom.conf
+    validate: /usr/sbin/sshd -T -f %s
+    mode: '0644'
+    owner: root
+    group: root
+
+- name: Template out sudoers file
+  ansible.builtin.template:
+    src: sudoers.j2
+    dest: /etc/sudoers.d/custom
+    validate: /usr/sbin/visudo -cf %s
+    owner: root
+    group: root
+    mode: '0644'
+
+- name: Disable cloudinit
+  ansible.builtin.file:
+    path: /etc/cloud/cloud-init.disable
+    owner: root
+    group: root
+    mode: '0744'
+    state: touch

@@ -1,0 +1,4 @@
+ansible_user: "root"
+ansible_ssh_pass: ""
+ansible_become_pass: ""
+ansible_host: "192.168.10.188"

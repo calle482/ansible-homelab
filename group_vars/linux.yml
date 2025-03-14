@@ -1,0 +1,13 @@
+common_group_firewall_rules:
+  - { port: "22", protocol: "tcp", ip: "192.168.10.139" }
+
+
+# VM & Netbox facts
+netbox_role: "virtual-server"
+netbox_site: "homelab-site"
+netbox_cluster: "pve"
+netbox_platform: "ubuntu-linux"
+netbox_prefix: "192.168.10.0/24"
+netbox_tenant: "homelab-tenant"
+vm_template: "ubuntu-2404-cloudinit-template"
+vm_storage: "local-lvm"

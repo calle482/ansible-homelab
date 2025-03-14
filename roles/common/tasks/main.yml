@@ -12,6 +12,10 @@
   ansible.builtin.import_tasks:
     file: firewall.yml
 
+- name: Import user tasks
+  ansible.builtin.import_tasks:
+    file: users.yml
+
 - name: Import SSH tasks
   ansible.builtin.import_tasks:
     file: ssh.yml

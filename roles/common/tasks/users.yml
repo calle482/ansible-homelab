@@ -1,0 +1,27 @@
+- name: Create ansible user
+  ansible.builtin.user:
+    name: ansible
+    password: '!'
+    password_expire_max: 999999
+    expires: -1
+    shell: /bin/bash
+
+- name: Copy ansible user public key
+  ansible.posix.authorized_key:
+    user: ansible
+    state: present
+    key: "{{ lookup('file', 'ansible_ssh_key.pub') }}"
+
+- name: Create my user
+  ansible.builtin.user:
+    name: calle
+    password: "{{ calle_password }}"
+    password_expire_max: 999999
+    expires: -1
+    shell: /bin/bash
+
+- name: Copy calle public key
+  ansible.posix.authorized_key:
+    user: calle
+    state: present
+    key: "{{ lookup('file', 'calle_ssh_key.pub') }}"

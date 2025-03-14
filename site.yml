@@ -1,6 +1,8 @@
 - name: Play for importing common configuration
   become: true
   hosts: linux
+  vars_files:
+    - vault.yml
   tasks:
 
     - name: Import common role
@@ -19,6 +21,8 @@
 - name: Play for importing arr configuration
   become: true
   hosts: arr01
+  vars_files:
+    - vault.yml
   tasks:
 
     - name: Import arr role

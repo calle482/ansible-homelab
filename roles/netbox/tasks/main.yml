@@ -115,3 +115,4 @@
 - name: Import netbox post install tasks
   ansible.builtin.import_tasks:
     file: netbox.yml
+  delegate_to: localhost

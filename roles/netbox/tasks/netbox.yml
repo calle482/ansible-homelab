@@ -21,13 +21,23 @@
     state: present
     validate_certs: false
 
+- name: Create Proxmox cluster cluster_type
+  netbox.netbox.netbox_cluster_type:
+    netbox_url: "{{ netbox_url }}"
+    netbox_token: "{{ netbox_api_key }}"
+    data:
+      name: "Proxmox"
+      slug: "proxmox"
+    state: present
+    validate_certs: false
+
 - name: Create netbox cluster - pve
   netbox.netbox.netbox_cluster:
     netbox_url: "{{ netbox_url }}"
     netbox_token: "{{ netbox_api_key }}"
     data:
       name: "pve"
-      cluster_type: "Virtualization"
+      cluster_type: "proxmox"
     state: present
     validate_certs: false
 
@@ -57,9 +67,32 @@
     netbox_token: "{{ netbox_api_key }}"
     data:
       prefix: 192.168.10.0/24
-      site: "homelab-site"
       tenant: "homelab-tenant"
       status: active
-      is_pool: true
+      is_pool: false
     state: present
     validate_certs: false
+
+- name: Reserve address range in prefix - 192.168.10.0/24
+  netbox.netbox.netbox_ip_address:
+    netbox_url: "{{ netbox_url }}"
+    netbox_token: "{{ netbox_api_key }}"
+    data:
+      address: "192.168.10.{{ item }}/24"
+      status: reserved
+      tenant: "homelab-tenant"
+    state: present
+    validate_certs: false
+  loop: "{{ range(1, 25) | list }}"
+
+- name: Reserve DHCP address range in prefix - 192.168.10.0/24
+  netbox.netbox.netbox_ip_address:
+    netbox_url: "{{ netbox_url }}"
+    netbox_token: "{{ netbox_api_key }}"
+    data:
+      address: "192.168.10.{{ item }}/24"
+      status: dhcp
+      tenant: "homelab-tenant"
+    state: present
+    validate_certs: false
+  loop: "{{ range(100, 255) | list }}"

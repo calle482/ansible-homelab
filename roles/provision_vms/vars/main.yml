@@ -1,8 +1,7 @@
-netbox_url: "https://demo.netbox.dev"
-netbox_api_key: "5a9ba2644ee839c3d8fe86761cb2371b07799afa"
-netbox_prefix: "10.112.148.0/28"
-netbox_tenant: "stark-industries"
-netbox_cluster: "DO-AMS3"
+netbox_url: "https://netbox.troncraft.xyz"
+netbox_prefix: "192.168.10.0/24"
+netbox_tenant: "homelab-tenant"
+netbox_cluster: "pve"
 vm_template: "ubuntu-2404-cloudinit-template"
 vm_storage: "local-lvm"
 
@@ -11,7 +10,7 @@ vm_storage: "local-lvm"
 
 # Netbox
 netbox_role: "virtual-server"
-netbox_site: "aai"
+netbox_site: "homelab-site"
 netbox_platform: "ubuntu-linux"
 
 # VM Template

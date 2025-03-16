@@ -84,6 +84,8 @@
     state: present
     validate_certs: false
   loop: "{{ range(1, 25) | list }}"
+  async: 60
+  poll: 0
 
 - name: Reserve DHCP address range in prefix - 192.168.10.0/24
   netbox.netbox.netbox_ip_address:
@@ -96,3 +98,5 @@
     state: present
     validate_certs: false
   loop: "{{ range(100, 255) | list }}"
+  async: 240
+  poll: 0

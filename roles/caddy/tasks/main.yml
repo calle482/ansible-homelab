@@ -1,0 +1,39 @@
+- name: Install docker
+  ansible.builtin.package:
+    name: "{{ item }}"
+    state: present
+  with_items:
+    - docker.io
+    - docker-compose-v2
+
+- name: Create directories for caddy
+  ansible.builtin.file:
+    path: "{{ item }}"
+    state: directory
+    owner: root
+    group: root
+    mode: '0770'
+  with_items:
+    - /opt/caddy
+    - /opt/caddy/config
+
+- name: Template out caddy docker-compose file
+  ansible.builtin.template:
+    src: docker-compose.yml.j2
+    dest: /opt/caddy/docker-compose.yml
+    owner: root
+    group: root
+    mode: '0770'
+
+- name: Template out caddyfile
+  ansible.builtin.template:
+    src: caddyfile_{{ inventory_hostname }}.j2
+    dest: /opt/caddy/config/caddyfile
+    owner: root
+    group: root
+    mode: '0770'
+
+- name: Start caddy container
+  community.docker.docker_compose_v2:
+    project_src: /opt/caddy
+    state: present

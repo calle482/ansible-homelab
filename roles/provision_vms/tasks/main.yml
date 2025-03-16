@@ -1,4 +1,4 @@
-- name: Check if VM already exists for {{ inventory_hostname }}
+- name: Check if VMs already exists
   ansible.builtin.shell: qm list | grep {{ inventory_hostname }} | cut -d ' ' -f 8
   ignore_errors: true
   register: vm_id_check

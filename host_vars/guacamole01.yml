@@ -1,0 +1,7 @@
+# VM Specifications
+vm_cpus: "1"
+vm_memory: "4096" # MB
+vm_disk_size: "40" # GB
+vm_storage: "hdd-img"
+
+ansible_host: 192.168.10.29

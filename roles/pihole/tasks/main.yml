@@ -1,10 +1,67 @@
+- name: Install docker
+  ansible.builtin.package:
+    name: "{{ item }}"
+    state: present
+  with_items:
+    - docker.io
+    - docker-compose-v2
+
+- name: Disable DNSStublistener in systemd-resolved
+  ansible.builtin.lineinfile:
+    path: /etc/systemd/resolved.conf
+    regexp: '^\\s*(#?)DNSStubListener'
+    line: "DNSStubListener=no"
+  notify: Restart systemd-resolved
+  register: systemd_resolved
+
+
+- name: Flush handlers
+  ansible.builtin.meta: flush_handlers
+
+- name: Remove /etc/resolv.conf
+  ansible.builtin.file:
+    path: /etc/resolve.conf
+    state: absent
+  when: systemd_resolved.changed
+
+- name: Create symlink from /run/systemd/resolve/resolv.conf -> /etc/resolv.conf
+  ansible.builtin.file:
+    src: /run/systemd/resolve/resolv.conf
+    dest: /etc/resolv.conf
+    owner: root
+    group: root
+    state: link
+
+
+- name: Create pihole user
+  ansible.builtin.user:
+    name: pihole
+    state: present
+    shell: /usr/bin/nologin
+    system: true
+    expires: -1
+    password: "!"
+    password_expire_max: 99999
+    create_home: false
+    uid: 1500
+
+- name: Get UID of pihole user
+  ansible.builtin.command: id -u pihole
+  register: pihole_uid
+  changed_when: false
+
+- name: Get GID of pihole user
+  ansible.builtin.command: id -g pihole
+  register: pihole_gid
+  changed_when: false
+
 - name: Create directories for pihole
   ansible.builtin.file:
     path: "{{ item }}"
     state: directory
     owner: root
-    group: docker
-    mode: '0660'
+    group: root
+    mode: '0770'
   with_items:
     - /opt/pihole
     - /opt/pihole/config
@@ -14,8 +71,8 @@
     src: docker-compose.yml.j2
     dest: /opt/pihole/docker-compose.yml
     owner: root
-    group: docker
-    mode: '0660'
+    group: root
+    mode: '0770'
 
 - name: Start pihole container
   community.docker.docker_compose_v2:

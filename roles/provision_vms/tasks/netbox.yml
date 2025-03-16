@@ -34,7 +34,7 @@
           prefix: "{{ netbox_prefix }}"
           status: active
           tenant: "{{ netbox_tenant }}"
-          dns_name: "{{ inventory_hostname }}.jagvettefan.com"
+          dns_name: "{{ inventory_hostname }}.troncraft.xyz"
           assigned_object:
             virtual_machine: "{{ inventory_hostname }}"
             name: eth0

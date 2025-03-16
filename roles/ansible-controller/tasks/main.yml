@@ -11,6 +11,8 @@
     - ansible
     - ansible-vault
     - ansible-galaxy
+    - passlib
+    - netaddr
 
 - name: Install ansible galaxy collections
   community.general.ansible_galaxy_install:
@@ -22,3 +24,4 @@
     - community.crypto
     - common.posix
     - netbox.netbox
+    - ansible.utils

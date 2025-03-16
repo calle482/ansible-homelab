@@ -22,7 +22,7 @@
       efitype: "4m"
       pre_enrolled_keys: "false"
     ipconfig:
-      ipconfig0: 'ip=192.168.10.25/24,gw=192.168.10.1'
+      ipconfig0: 'ip={{ vm_ip.ip_address.address }},gw=192.168.10.1'
     state: present
     validate_certs: false
     timeout: 600
@@ -39,7 +39,7 @@
     cores: "{{ vm_cpus }}"
     memory: "{{ vm_memory }}" # MB
     ipconfig:
-      ipconfig0: 'ip=192.168.10.25/24,gw=192.168.10.1'
+      ipconfig0: 'ip={{ vm_ip.ip_address.address }},gw=192.168.10.1'
     autostart: true
     update: true
     state: present
@@ -68,7 +68,7 @@
 
 - name: Wait for SSH to become available
   ansible.builtin.wait_for:
-    host: 192.168.10.25
+    host: "{{ vm_ip.ip_address.address | ansible.utils.ipaddr('address') }}"
     port: 22
     delay: 10
     timeout: 600

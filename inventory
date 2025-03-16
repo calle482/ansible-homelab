@@ -3,10 +3,11 @@ arr01
 minecraft01
 jellyfin01
 netbox01
-nginxproxy01
+caddy01
 pihole01
 guacamole01
 ansible01
+extcaddy01
 
 [update]
 arr01
@@ -28,6 +29,9 @@ guacamole01
 
 [provision]
 netbox01
+pihole01
+caddy01
+guacamole01
 
 [proxmox]
 proxmox01

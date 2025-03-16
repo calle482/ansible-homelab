@@ -1,0 +1,12 @@
+# VM Specifications
+vm_cpus: "1"
+vm_memory: "4096" # MB
+vm_disk_size: "40" # GB
+vm_storage: "local-lvm"
+
+# Firewall
+common_host_firewall_rules:
+  - { port: "80", protocol: "tcp" } # HTTP
+  - { port: "443", protocol: "tcp" } # HTTPS
+
+ansible_host: 192.168.10.28

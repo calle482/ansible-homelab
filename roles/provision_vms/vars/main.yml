@@ -19,4 +19,4 @@ vm_template_image_url: "https://cloud-images.ubuntu.com/daily/server/releases/24
 vm_template_id: "10002"
 
 # proxmox
-proxmox_url:
+proxmox_url: "192.168.10.188"

@@ -1,0 +1,49 @@
+# Wildcard certificate creation
+*.troncraft.xyz {
+  tls {
+    dns cloudflare {env.CF_API_TOKEN}
+    resolvers 1.1.1.1
+  }
+
+  # Header settings
+  header {
+    X-Content-Type-Options nosniff
+    X-Frame-Options DENY
+    X-XSS-Protection "1; mode=block"
+    Referrer-Policy "no-referrer"
+    Strict-Transport-Security "max-age=31536000; includeSubDomains; preload"
+  }
+
+  # Define local IP range
+  @local remote_ip 192.168.10.0/24
+
+  # Internal services
+  @netbox host netbox.troncraft.xyz
+  handle @netbox {
+    reverse_proxy @local netbox.troncraft.xyz:8080
+  }
+  @qbittorrent host qbit.troncraft.xyz
+  handle @qbittorrent {
+    reverse_proxy @local 192.168.10.139:8080
+  }
+  @sonarr host sonarr.troncraft.xyz
+  handle @sonarr {
+    reverse_proxy @local 192.168.10.139:8989
+  }
+  @radarr host radarr.troncraft.xyz
+  handle @radarr {
+    reverse_proxy @local 192.168.10.139:7878
+  }
+  @autobrr host autobrr.troncraft.xyz
+  handle @autobrr {
+    reverse_proxy @local 192.168.10.139:7474
+  }
+  @prowlarr host prowlarr.troncraft.xyz
+  handle @prowlarr {
+    reverse_proxy @local 192.168.10.139:9696
+  }
+  @pihole host pihole.troncraft.xyz
+  handle @pihole {
+    reverse_proxy @local 192.168.10.26:80
+  }
+}

@@ -1,6 +1,7 @@
 services:
   netbox: &netbox
     image: docker.io/netboxcommunity/netbox:{{ netbox_version }}
+    restart: always
     depends_on:
       - postgres
       - redis
@@ -22,6 +23,7 @@ services:
     depends_on:
       netbox:
         condition: service_healthy
+    restart: always
     command:
       - /opt/netbox/venv/bin/python
       - /opt/netbox/netbox/manage.py
@@ -33,6 +35,7 @@ services:
       interval: 15s
   netbox-housekeeping:
     <<: *netbox
+    restart: always
     depends_on:
       netbox:
         condition: service_healthy
@@ -47,6 +50,7 @@ services:
   # postgres
   postgres:
     image: docker.io/postgres:17-alpine
+    restart: always
     healthcheck:
       test: pg_isready -q -t 2 -d $$POSTGRES_DB -U $$POSTGRES_USER
       start_period: 20s
@@ -60,6 +64,7 @@ services:
   # redis
   redis:
     image: docker.io/valkey/valkey:8.0-alpine
+    restart: always
     command:
       - sh
       - -c ./config/# this is to evaluate the $REDIS_PASSWORD from the env
@@ -75,6 +80,7 @@ services:
       - ./config/netbox-redis-data:/data
   redis-cache:
     image: docker.io/valkey/valkey:8.0-alpine
+    restart: always
     command:
       - sh
       - -c # this is to evaluate the $REDIS_PASSWORD from the env
@@ -86,7 +92,7 @@ services:
   caddy:
     image: iarekylew00t/caddy-cloudflare:latest
     container_name: caddy
-    restart: unless-stopped
+    restart: always
     ports:
       - "443:443"
       - "80:80"

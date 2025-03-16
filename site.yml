@@ -49,18 +49,11 @@
       ansible.builtin.import_role:
         name: netbox
 
-- name: Play for importing nginx proxy manager configuration
-  become: true
-  hosts: nginxproxy01
-  tasks:
-
-    - name: Import npm role
-      ansible.builtin.import_role:
-        name: npm
-
 - name: Play for importing pihole configuration
   become: true
   hosts: pihole01
+  vars_files:
+    - vault.yml
   tasks:
 
     - name: Import pihole role
@@ -70,8 +63,21 @@
 - name: Play for importing guacamole configuration
   become: true
   hosts: guacamole01
+  vars_files:
+    - vault.yml
   tasks:
 
     - name: Import guacamole role
       ansible.builtin.import_role:
         name: guacamole
+
+- name: Play for importing caddy configuration
+  become: true
+  hosts: caddy01
+  vars_files:
+    - vault.yml
+  tasks:
+
+    - name: Import caddy role
+      ansible.builtin.import_role:
+        name: caddy

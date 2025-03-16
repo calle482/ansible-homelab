@@ -1,7 +1,8 @@
 # VM Specifications
 vm_cpus: "2"
 vm_memory: "4096" # MB
-vm_disk_size: "60" # GB
+vm_disk_size: "100" # GB
+vm_storage: "local-lvm"
 
 # Firewall
 common_host_firewall_rules:

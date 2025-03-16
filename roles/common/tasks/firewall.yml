@@ -61,3 +61,7 @@
 - name: Reload ufw config
   ansible.builtin.ufw:
     state: reloaded
+
+- name: Ensure UFW is enabled
+  community.general.ufw:
+    state: enabled

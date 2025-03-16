@@ -1,7 +1,9 @@
-- name: Install python3
+- name: Install python packages
   ansible.builtin.package:
-    name: python3
+    name: "{{ item }}"
     state: present
+  with_items:
+    - python3
 
 - name: Install qemu guest agent
   ansible.builtin.package:
@@ -23,3 +25,7 @@
 - name: Import sudoers tasks
   ansible.builtin.import_tasks:
     file: ssh.yml
+
+- name: Import DNS tasks
+  ansible.builtin.import_tasks:
+    file: dns.yml

@@ -2,3 +2,4 @@
 vm_cpus: "4"
 vm_memory: "16384" # MB
 vm_disk_size: "80" # GB
+vm_storage: "local-lvm"

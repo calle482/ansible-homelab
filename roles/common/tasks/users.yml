@@ -15,7 +15,7 @@
 - name: Create my user
   ansible.builtin.user:
     name: calle
-    password: "{{ calle_password }}"
+    password: "{{ calle_password | password_hash('sha512')}}"
     password_expire_max: 999999
     expires: -1
     shell: /bin/bash

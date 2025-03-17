@@ -2,3 +2,4 @@ vault.yml
 .ansible
 .vscode
 vault_password
+ansible_vault_password.txt

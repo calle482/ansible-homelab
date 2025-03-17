@@ -15,7 +15,7 @@
     cores: "{{ vm_cpus }}"
     memory: "{{ vm_memory }}" # MB
     virtio:
-      virtio0: "local-lvm:{{ vm_disk_size }},format=qcow2"
+      virtio0: "{{ vm_storage }} }}:{{ vm_disk_size }},format=qcow2"
     efidisk0:
       storage: "local-lvm"
       format: "raw"

@@ -2,7 +2,7 @@
 vm_cpus: "1"
 vm_memory: "4096" # MB
 vm_disk_size: "40" # GB
-vm_storage: "local-lvm"
+vm_storage: "hdd-img"
 
 # Firewall
 common_host_firewall_rules:

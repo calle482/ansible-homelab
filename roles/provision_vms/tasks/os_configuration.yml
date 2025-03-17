@@ -34,11 +34,3 @@
     owner: root
     group: root
     mode: '0644'
-
-- name: Disable cloudinit
-  ansible.builtin.file:
-    path: /etc/cloud/cloud-init.disable
-    owner: root
-    group: root
-    mode: '0744'
-    state: touch

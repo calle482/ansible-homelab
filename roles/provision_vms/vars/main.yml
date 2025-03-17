@@ -3,7 +3,6 @@ netbox_prefix: "192.168.10.0/24"
 netbox_tenant: "homelab-tenant"
 netbox_cluster: "pve"
 vm_template: "ubuntu-2404-cloudinit-template"
-vm_storage: "local-lvm"
 
 
 

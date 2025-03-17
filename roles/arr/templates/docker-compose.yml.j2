@@ -38,7 +38,7 @@ services:
       - WEBUI_PORT=8080
     volumes:
       - ./qbittorrent/config:/config
-      - /mnt/storage:/mnt/storage
+      - /mnt/storage:/mnt/18tb
       - ./qbittorrent/speedtest:/speedtest
     restart: always
     depends_on:

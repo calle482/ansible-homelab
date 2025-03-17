@@ -38,12 +38,7 @@ services:
       - WEBUI_PORT=8080
     volumes:
       - ./qbittorrent/config:/config
-      - /mnt/18tb/torrents:/mnt/18tb/torrents
-      - /mnt/4tb/skit_torrents:/mnt/4tb/skit_torrents
-      - /mnt/1tb/torrents:/mnt/1tb/torrents
-      - /mnt/18tb/xtorrents:/mnt/18tb/xtorrents
-      - /mnt/18tb/jellyfin/Movies/:/mnt/18tb/jellyfin/Movies/
-      - /mnt/4tb/autobrr:/mnt/4tb/autobrr
+      - /mnt/storage
       - ./qbittorrent/speedtest:/speedtest
     restart: always
     depends_on:
